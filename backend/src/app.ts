@@ -3,6 +3,7 @@ import cors from "cors";
 import { healthRouter } from "./routes/health";
 import { resumeRouter } from "./routes/resume";
 import { matchingRouter } from "./routes/matching";
+import { careerPlanRouter } from "./routes/careerPlan";
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(express.json({ limit: "10mb" }));
 app.use("/api", healthRouter);
 app.use("/api", resumeRouter);
 app.use("/api", matchingRouter);
+app.use("/api", careerPlanRouter);
 
 // Global error handler for multer and other errors
 app.use(

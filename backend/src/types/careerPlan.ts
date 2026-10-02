@@ -1,24 +1,3 @@
-export interface AnalysisResult {
-  matchScore: number;
-  summary: string;
-  matchingSkills: string[];
-  missingSkills: string[];
-  matchingExperience: string[];
-  missingRequirements: string[];
-  strengths: string[];
-  improvements: string[];
-}
-
-export interface ParseResult {
-  text: string;
-  pages: number;
-  filename: string;
-}
-
-export interface ApiError {
-  error: string;
-}
-
 export interface MissingSkillAnalysis {
   skillName: string;
   importance: 'High' | 'Medium' | 'Low';
@@ -71,4 +50,10 @@ export interface CareerPlanResult {
   resumeImprovement: ResumeImprovement;
   projectRecommendations: ProjectRecommendation[];
   learningRoadmap: LearningRoadmap;
+}
+
+export interface CareerPlanRequest {
+  resumeText: string;
+  jobDescription: string;
+  analysis: import('./analysis').AnalysisResult;
 }

@@ -5,18 +5,22 @@ import Link from "next/link";
 import ResumeUpload from "@/components/ResumeUpload";
 import JobDescriptionInput from "@/components/JobDescriptionInput";
 import AnalysisResults from "@/components/AnalysisResults";
-import { parseResume, analyzeMatch } from "@/lib/api";
-import { AnalysisResult } from "@/types/analysis";
+import CareerPlanResults from "@/components/CareerPlanResults";
+import { parseResume, analyzeMatch, generateCareerPlan } from "@/lib/api";
+import { AnalysisResult, CareerPlanResult } from "@/types/analysis";
 
-type Status = "idle" | "parsing" | "analyzing" | "done" | "error";
+type Status = "idle" | "parsing" | "analyzing" | "done" | "generating-plan" | "plan-done" | "error";
 
 export default function AnalyzePage() {
   const [file, setFile] = useState<File | null>(null);
   const [fileError, setFileError] = useState<string | null>(null);
   const [jobDescription, setJobDescription] = useState("");
+  const [resumeText, setResumeText] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [careerPlan, setCareerPlan] = useState<CareerPlanResult | null>(null);
+  const [planError, setPlanError] = useState<string | null>(null);
 
   const canAnalyze = file && jobDescription.trim().length > 0 && status !== "parsing" && status !== "analyzing";
 
@@ -33,11 +37,14 @@ export default function AnalyzePage() {
 
     setError(null);
     setResult(null);
+    setCareerPlan(null);
+    setPlanError(null);
 
     try {
       // Step 1: Parse resume
       setStatus("parsing");
       const parsed = await parseResume(file);
+      setResumeText(parsed.text);
 
       // Step 2: Analyze match
       setStatus("analyzing");
@@ -53,13 +60,39 @@ export default function AnalyzePage() {
     }
   };
 
+  const handleGeneratePlan = async () => {
+    if (!result || !resumeText) return;
+
+    setPlanError(null);
+    setCareerPlan(null);
+
+    try {
+      setStatus("generating-plan");
+      const plan = await generateCareerPlan(
+        resumeText,
+        jobDescription.trim(),
+        result
+      );
+      setCareerPlan(plan);
+      setStatus("plan-done");
+    } catch (err) {
+      setPlanError(
+        err instanceof Error ? err.message : "Failed to generate career plan."
+      );
+      setStatus("done");
+    }
+  };
+
   const handleReset = () => {
     setFile(null);
     setFileError(null);
     setJobDescription("");
+    setResumeText("");
     setStatus("idle");
     setError(null);
     setResult(null);
+    setCareerPlan(null);
+    setPlanError(null);
   };
 
   return (
@@ -87,7 +120,7 @@ export default function AnalyzePage() {
         </div>
 
         {/* Input Section */}
-        {status !== "done" && (
+        {status !== "done" && status !== "generating-plan" && status !== "plan-done" && (
           <div className="space-y-6">
             <ResumeUpload
               file={file}
@@ -142,9 +175,49 @@ export default function AnalyzePage() {
         )}
 
         {/* Results Section */}
-        {status === "done" && result && (
+        {(status === "done" || status === "generating-plan" || status === "plan-done") && result && (
           <div className="space-y-6">
             <AnalysisResults result={result} />
+
+            {/* Career Plan Section */}
+            {!careerPlan && status !== "generating-plan" && (
+              <div className="space-y-3">
+                {planError && (
+                  <div className="rounded-xl border border-red-500/30 bg-red-500/10 p-4">
+                    <p className="text-red-400 text-sm">{planError}</p>
+                  </div>
+                )}
+                <button
+                  onClick={handleGeneratePlan}
+                  className="w-full py-3.5 rounded-xl font-semibold bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-400 hover:to-purple-400 text-white shadow-lg shadow-indigo-500/25 hover:shadow-indigo-400/30 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+                >
+                  🚀 Generate My Improvement Plan
+                </button>
+              </div>
+            )}
+
+            {/* Generating Plan Loading State */}
+            {status === "generating-plan" && (
+              <div className="rounded-xl border border-indigo-500/30 bg-indigo-500/5 p-6 text-center">
+                <div className="inline-flex items-center gap-3">
+                  <svg className="animate-spin h-5 w-5 text-indigo-400" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  <span className="text-indigo-300 font-medium">
+                    Creating your personalized improvement plan...
+                  </span>
+                </div>
+                <p className="text-slate-500 text-sm mt-2">
+                  Analyzing skills gaps, generating project ideas, and building your roadmap
+                </p>
+              </div>
+            )}
+
+            {/* Career Plan Results */}
+            {careerPlan && (
+              <CareerPlanResults plan={careerPlan} />
+            )}
 
             <button
               onClick={handleReset}

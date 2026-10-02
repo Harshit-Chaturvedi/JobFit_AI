@@ -6,6 +6,26 @@ Upload your resume, paste a job description, and get an instant analysis of how 
 
 ---
 
+## Features
+
+### ✅ Resume Match Analysis
+Upload your resume and a job description to get:
+- **Match Score** — how well your profile fits the role (0–100%)
+- **Matching Skills** — skills you already have that the job requires
+- **Missing Skills** — skills required by the job but not found in your resume
+- **Relevant Experience** — experience from your resume relevant to the role
+- **Strengths & Improvements** — what you're strong at and where to improve
+
+### 🚀 Candidate Improvement Plan *(New)*
+After the match analysis, generate a personalized improvement plan:
+- **Candidate Summary** — overview statement, top strength, biggest gap, and recommended next step
+- **Missing Skills Analysis** — detailed breakdown of each missing skill with importance level, learning difficulty, and specific recommendations
+- **Resume Improvement** — skills to highlight, relevant projects to emphasize, keywords to mention, and project description suggestions (never fabricates experience)
+- **Project Recommendations** — 2–3 realistic project ideas connected to the target role with technologies, difficulty level, and estimated time
+- **Learning Roadmap** — prioritized learning path divided into Must Learn, Should Learn, and Nice to Have
+
+---
+
 ## Tech Stack
 
 | Layer    | Technology                                               |
@@ -28,7 +48,8 @@ JobFit/
 │   │   ├── components/
 │   │   │   ├── ResumeUpload.tsx
 │   │   │   ├── JobDescriptionInput.tsx
-│   │   │   └── AnalysisResults.tsx
+│   │   │   ├── AnalysisResults.tsx
+│   │   │   └── CareerPlanResults.tsx  # NEW — Improvement plan UI
 │   │   ├── lib/
 │   │   │   └── api.ts           # API client
 │   │   └── types/
@@ -42,17 +63,23 @@ JobFit/
 │   │   │   └── env.ts           # Environment configuration
 │   │   ├── controllers/
 │   │   │   ├── resumeController.ts
-│   │   │   └── matchingController.ts
+│   │   │   ├── matchingController.ts
+│   │   │   └── careerPlanController.ts  # NEW
 │   │   ├── middleware/
 │   │   │   └── upload.ts        # Multer file upload config
 │   │   ├── routes/
 │   │   │   ├── health.ts
 │   │   │   ├── resume.ts
-│   │   │   └── matching.ts
+│   │   │   ├── matching.ts
+│   │   │   └── careerPlan.ts    # NEW
 │   │   ├── services/
-│   │   │   └── aiService.ts     # LLM integration (swappable)
+│   │   │   ├── aiService.ts     # LLM integration (match analysis)
+│   │   │   └── careerPlanService.ts  # NEW — Improvement plan AI
+│   │   ├── tests/
+│   │   │   └── careerPlan.test.ts  # NEW — Validation tests
 │   │   ├── types/
-│   │   │   └── analysis.ts      # Shared TypeScript types
+│   │   │   ├── analysis.ts      # Match analysis types
+│   │   │   └── careerPlan.ts    # NEW — Career plan types
 │   │   ├── app.ts
 │   │   └── index.ts
 │   ├── .env.example
@@ -93,11 +120,12 @@ The API server runs at [http://localhost:3001](http://localhost:3001).
 
 ## API Endpoints
 
-| Method | Endpoint               | Description                        |
-| ------ | ---------------------- | ---------------------------------- |
-| GET    | `/api/health`          | Health check                       |
-| POST   | `/api/resume/parse`    | Upload & extract text from PDF     |
-| POST   | `/api/matching/analyze`| Analyze resume against job posting |
+| Method | Endpoint               | Description                            |
+| ------ | ---------------------- | -------------------------------------- |
+| GET    | `/api/health`          | Health check                           |
+| POST   | `/api/resume/parse`    | Upload & extract text from PDF         |
+| POST   | `/api/matching/analyze`| Analyze resume against job posting     |
+| POST   | `/api/career-plan`     | Generate candidate improvement plan    |
 
 ### `POST /api/resume/parse`
 
@@ -140,6 +168,79 @@ Analyze how well a resume matches a job description.
 }
 ```
 
+### `POST /api/career-plan`
+
+Generate a personalized candidate improvement plan based on the match analysis.
+
+- **Content-Type:** `application/json`
+- **Request body:**
+```json
+{
+  "resumeText": "extracted resume text...",
+  "jobDescription": "paste the job posting here...",
+  "analysis": {
+    "matchScore": 78,
+    "summary": "...",
+    "matchingSkills": ["Python", "SQL"],
+    "missingSkills": ["TypeScript", "React"],
+    "matchingExperience": ["..."],
+    "missingRequirements": ["..."],
+    "strengths": ["..."],
+    "improvements": ["..."]
+  }
+}
+```
+- **Response:**
+```json
+{
+  "candidateSummary": {
+    "overviewStatement": "You are a strong match in backend development, but...",
+    "currentMatchScore": 78,
+    "topStrength": "Strong backend skills with Python and SQL",
+    "biggestGap": "No frontend framework experience",
+    "recommendedNextStep": "Start learning React and build a small project"
+  },
+  "missingSkillsAnalysis": [
+    {
+      "skillName": "React",
+      "importance": "High",
+      "reason": "The job requires React for frontend development.",
+      "learningDifficulty": "Requires deep preparation",
+      "recommendation": "Build at least one React project and understand components, hooks and API integration."
+    }
+  ],
+  "resumeImprovement": {
+    "skillsToHighlight": ["Python", "SQL", "REST APIs"],
+    "relevantProjects": ["Backend API project"],
+    "keywordsToMention": ["microservices", "CI/CD"],
+    "sectionsToImprove": ["Add a technical skills section"],
+    "projectDescriptionSuggestions": ["Add metrics to your API project description"]
+  },
+  "projectRecommendations": [
+    {
+      "title": "Full-Stack Task Manager",
+      "problem": "Need to demonstrate frontend and backend skills together",
+      "description": "Build a task management app with React frontend and Python/Node.js backend",
+      "technologies": ["React", "TypeScript", "Node.js", "PostgreSQL"],
+      "skillsCovered": ["React", "TypeScript", "Full-Stack Development"],
+      "difficulty": "Intermediate",
+      "estimatedTime": "2-3 weeks"
+    }
+  ],
+  "learningRoadmap": {
+    "mustLearn": [
+      { "topic": "React", "reason": "Core frontend framework required", "suggestedOrder": 1 }
+    ],
+    "shouldLearn": [
+      { "topic": "TypeScript", "reason": "Used across the codebase", "suggestedOrder": 1 }
+    ],
+    "niceToHave": [
+      { "topic": "Docker", "reason": "Deployment tooling", "suggestedOrder": 1 }
+    ]
+  }
+}
+```
+
 ## Environment Variables
 
 ### Backend (`backend/.env`)
@@ -156,7 +257,9 @@ Analyze how well a resume matches a job description.
 | ---------------------- | -------- | ------------------------------------ |
 | `NEXT_PUBLIC_API_URL`  | No       | Backend API URL (default: http://localhost:3001/api) |
 
-## How to Test the Resume Analysis Flow
+## How to Test
+
+### Manual Testing (Full Flow)
 
 1. Start the backend: `cd backend && npm run dev`
 2. Start the frontend: `cd frontend && npm run dev`
@@ -166,6 +269,26 @@ Analyze how well a resume matches a job description.
 6. Paste a job description
 7. Click **"Analyze My Match"**
 8. View your match score, matching/missing skills, and improvement suggestions
+9. Click **"Generate My Improvement Plan"**
+10. View your personalized action plan with skills analysis, resume tips, project ideas, and learning roadmap
+
+### Automated Tests (Validation)
+
+Run the career plan validation tests:
+
+```bash
+cd backend
+npx ts-node src/tests/careerPlan.test.ts
+```
+
+Tests cover:
+- Strong candidate with complete AI response
+- Weak candidate with many missing skills
+- Candidate with projects but little professional experience
+- Completely empty/invalid AI response (crash safety)
+- Null/undefined input (crash safety)
+- Invalid enum values (default handling)
+- Partial response with missing sections
 
 ## Planned Features
 

@@ -36,3 +36,23 @@ export async function analyzeMatch(
 
   return data;
 }
+
+export async function generateCareerPlan(
+  resumeText: string,
+  jobDescription: string,
+  analysis: import("@/types/analysis").AnalysisResult
+): Promise<import("@/types/analysis").CareerPlanResult> {
+  const res = await fetch(`${API_BASE}/career-plan`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ resumeText, jobDescription, analysis }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error || "Failed to generate career plan.");
+  }
+
+  return data;
+}
