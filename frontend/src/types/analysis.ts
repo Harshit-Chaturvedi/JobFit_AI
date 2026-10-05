@@ -72,3 +72,53 @@ export interface CareerPlanResult {
   projectRecommendations: ProjectRecommendation[];
   learningRoadmap: LearningRoadmap;
 }
+
+export type ChunkType =
+  | "summary"
+  | "skills"
+  | "experience"
+  | "projects"
+  | "education"
+  | "certifications"
+  | "responsibilities"
+  | "required_skills"
+  | "preferred_skills"
+  | "qualifications"
+  | "general";
+
+export interface RequirementMatch {
+  requirement: string;
+  matchedContent: string;
+  similarity: number;
+  chunkType: ChunkType;
+}
+
+export interface EvidenceItem {
+  requirement: string;
+  resumeExcerpt: string;
+  similarity: number;
+  sourceSection: ChunkType;
+}
+
+export interface ScoreBreakdown {
+  semanticScore: number;
+  llmScore: number;
+  skillMatchScore: number;
+  finalScore: number;
+  weights: {
+    semantic: number;
+    llm: number;
+    skillMatch: number;
+  };
+}
+
+export interface SemanticMatchResponse {
+  semanticScore: number;
+  finalScore: number;
+  scoreBreakdown: ScoreBreakdown;
+  matchedRequirements: RequirementMatch[];
+  unmatchedRequirements: string[];
+  evidence: EvidenceItem[];
+  resumeId: string;
+  jobDescriptionId: string;
+}

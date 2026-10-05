@@ -4,6 +4,7 @@ import { healthRouter } from "./routes/health";
 import { resumeRouter } from "./routes/resume";
 import { matchingRouter } from "./routes/matching";
 import { careerPlanRouter } from "./routes/careerPlan";
+import { semanticRouter } from "./routes/semantic";
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use("/api", healthRouter);
 app.use("/api", resumeRouter);
 app.use("/api", matchingRouter);
 app.use("/api", careerPlanRouter);
+app.use("/api", semanticRouter);
 
 // Global error handler for multer and other errors
 app.use(

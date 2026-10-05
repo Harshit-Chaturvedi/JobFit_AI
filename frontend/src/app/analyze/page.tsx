@@ -6,8 +6,9 @@ import ResumeUpload from "@/components/ResumeUpload";
 import JobDescriptionInput from "@/components/JobDescriptionInput";
 import AnalysisResults from "@/components/AnalysisResults";
 import CareerPlanResults from "@/components/CareerPlanResults";
-import { parseResume, analyzeMatch, generateCareerPlan } from "@/lib/api";
-import { AnalysisResult, CareerPlanResult } from "@/types/analysis";
+import SemanticMatchResults from "@/components/SemanticMatchResults";
+import { parseResume, analyzeMatch, generateCareerPlan, performSemanticMatch } from "@/lib/api";
+import { AnalysisResult, CareerPlanResult, SemanticMatchResponse } from "@/types/analysis";
 
 type Status = "idle" | "parsing" | "analyzing" | "done" | "generating-plan" | "plan-done" | "error";
 
@@ -21,6 +22,9 @@ export default function AnalyzePage() {
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [careerPlan, setCareerPlan] = useState<CareerPlanResult | null>(null);
   const [planError, setPlanError] = useState<string | null>(null);
+  const [semanticResult, setSemanticResult] = useState<SemanticMatchResponse | null>(null);
+  const [semanticLoading, setSemanticLoading] = useState(false);
+  const [semanticError, setSemanticError] = useState<string | null>(null);
 
   const canAnalyze = file && jobDescription.trim().length > 0 && status !== "parsing" && status !== "analyzing";
 
@@ -39,6 +43,8 @@ export default function AnalyzePage() {
     setResult(null);
     setCareerPlan(null);
     setPlanError(null);
+    setSemanticResult(null);
+    setSemanticError(null);
 
     try {
       // Step 1: Parse resume
@@ -46,17 +52,40 @@ export default function AnalyzePage() {
       const parsed = await parseResume(file);
       setResumeText(parsed.text);
 
-      // Step 2: Analyze match
+      // Step 2: Analyze match (LLM)
       setStatus("analyzing");
       const analysis = await analyzeMatch(parsed.text, jobDescription.trim());
 
       setResult(analysis);
       setStatus("done");
+
+      // Step 3: Trigger Semantic Matching asynchronously
+      fetchSemanticMatch(parsed.text, jobDescription.trim(), analysis);
     } catch (err) {
       setStatus("error");
       setError(
         err instanceof Error ? err.message : "Something went wrong. Please try again."
       );
+    }
+  };
+
+  const fetchSemanticMatch = async (
+    rText: string,
+    jdText: string,
+    llmAnalysis?: AnalysisResult
+  ) => {
+    setSemanticLoading(true);
+    setSemanticError(null);
+    try {
+      const semResult = await performSemanticMatch(rText, jdText, llmAnalysis);
+      setSemanticResult(semResult);
+    } catch (err) {
+      console.warn("Semantic matching could not complete:", err);
+      setSemanticError(
+        err instanceof Error ? err.message : "Semantic matching is currently unavailable."
+      );
+    } finally {
+      setSemanticLoading(false);
     }
   };
 
@@ -93,6 +122,8 @@ export default function AnalyzePage() {
     setResult(null);
     setCareerPlan(null);
     setPlanError(null);
+    setSemanticResult(null);
+    setSemanticError(null);
   };
 
   return (
@@ -178,6 +209,39 @@ export default function AnalyzePage() {
         {(status === "done" || status === "generating-plan" || status === "plan-done") && result && (
           <div className="space-y-6">
             <AnalysisResults result={result} />
+
+            {/* Semantic Matching Section */}
+            {semanticLoading && (
+              <div className="rounded-xl border border-indigo-500/20 bg-slate-900/40 p-5 text-center">
+                <div className="inline-flex items-center gap-3">
+                  <svg className="animate-spin h-4 w-4 text-indigo-400" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  <span className="text-indigo-300 text-sm font-medium">
+                    Computing vector embeddings and semantic similarity...
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {semanticResult && !semanticLoading && (
+              <SemanticMatchResults semanticResult={semanticResult} />
+            )}
+
+            {semanticError && !semanticLoading && (
+              <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 flex items-center justify-between gap-3">
+                <p className="text-amber-400 text-xs">
+                  ⚠️ Semantic vector matching: {semanticError} (LLM analysis remains fully active).
+                </p>
+                <button
+                  onClick={() => fetchSemanticMatch(resumeText, jobDescription.trim(), result)}
+                  className="text-xs px-3 py-1 rounded bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-slate-500 shrink-0"
+                >
+                  Retry
+                </button>
+              </div>
+            )}
 
             {/* Career Plan Section */}
             {!careerPlan && status !== "generating-plan" && (

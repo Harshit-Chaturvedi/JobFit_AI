@@ -56,3 +56,31 @@ export async function generateCareerPlan(
 
   return data;
 }
+
+export async function performSemanticMatch(
+  resumeText: string,
+  jobDescription: string,
+  llmAnalysis?: import("@/types/analysis").AnalysisResult,
+  resumeId?: string,
+  jobDescriptionId?: string
+): Promise<import("@/types/analysis").SemanticMatchResponse> {
+  const res = await fetch(`${API_BASE}/semantic-match`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      resumeText,
+      jobDescription,
+      llmAnalysis,
+      resumeId,
+      jobDescriptionId,
+    }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error || "Failed to perform semantic match.");
+  }
+
+  return data;
+}
