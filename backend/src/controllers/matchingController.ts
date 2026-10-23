@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { analyzeMatch } from "../services/aiService";
 import { AnalyzeRequest } from "../types/analysis";
+import { validateTextInputs } from "../middleware/apiProtection";
 
 export async function analyzeMatchController(
   req: Request,
@@ -9,13 +10,7 @@ export async function analyzeMatchController(
   try {
     const { resumeText, jobDescription } = req.body as AnalyzeRequest;
 
-    if (!resumeText || typeof resumeText !== "string" || resumeText.trim().length === 0) {
-      res.status(400).json({ error: "Resume text is required." });
-      return;
-    }
-
-    if (!jobDescription || typeof jobDescription !== "string" || jobDescription.trim().length === 0) {
-      res.status(400).json({ error: "Job description is required." });
+    if (!validateTextInputs(resumeText, jobDescription, res)) {
       return;
     }
 

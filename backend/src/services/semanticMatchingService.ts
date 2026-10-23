@@ -2,6 +2,7 @@ import { DocumentChunk, RequirementMatch, SemanticMatchResult, EvidenceItem } fr
 import { generateEmbeddings, cosineSimilarity, isEmbeddingServiceAvailable } from "./embeddingService";
 import { chunkResumeText, chunkJobDescription } from "./chunkingService";
 import * as databaseService from "./databaseService";
+import { config } from "../config/env";
 
 // Threshold above which a requirement is considered matched by semantic similarity
 export const SIMILARITY_THRESHOLD = 0.58;
@@ -65,7 +66,7 @@ export async function performSemanticMatch(params: {
     throw new Error("Embedding service is not available (Gemini API key missing).");
   }
 
-  const isDbReady = await databaseService.isDatabaseAvailable();
+  const isDbReady = config.persistAnalyses && await databaseService.isDatabaseAvailable();
   let resumeId = params.resumeId || "";
   let jobDescriptionId = params.jobDescriptionId || "";
 

@@ -5,12 +5,24 @@ import { resumeRouter } from "./routes/resume";
 import { matchingRouter } from "./routes/matching";
 import { careerPlanRouter } from "./routes/careerPlan";
 import { semanticRouter } from "./routes/semantic";
+import { chatRouter } from "./routes/chat";
+import { apiRateLimiter } from "./middleware/apiProtection";
+import { config } from "./config/env";
 
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin(origin, callback) {
+    if (!origin || config.corsOrigins.includes(origin)) {
+      callback(null, true);
+      return;
+    }
+    callback(new Error("Origin is not allowed by CORS."));
+  },
+}));
 app.use(express.json({ limit: "10mb" }));
+app.use("/api", apiRateLimiter);
 
 // Routes
 app.use("/api", healthRouter);
@@ -18,6 +30,7 @@ app.use("/api", resumeRouter);
 app.use("/api", matchingRouter);
 app.use("/api", careerPlanRouter);
 app.use("/api", semanticRouter);
+app.use("/api", chatRouter);
 
 // Global error handler for multer and other errors
 app.use(
@@ -33,6 +46,10 @@ app.use(
     }
     if (err.message?.includes("File too large")) {
       res.status(400).json({ error: "File size exceeds the 5MB limit." });
+      return;
+    }
+    if (err.message === "Origin is not allowed by CORS.") {
+      res.status(403).json({ error: err.message });
       return;
     }
     console.error("[server] Unhandled error:", err);

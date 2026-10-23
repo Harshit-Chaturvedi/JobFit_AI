@@ -29,6 +29,11 @@ export async function getPool(): Promise<Pool> {
   pool = new Pool({
     connectionString: config.databaseUrl,
   });
+  pool.on("connect", (client) => {
+    void pgvector.registerTypes(client).catch((error: unknown) => {
+      console.error("Failed to register pgvector types:", error);
+    });
+  });
 
   return pool;
 }
@@ -48,7 +53,7 @@ export async function initializeDatabase(): Promise<void> {
       await client.query('CREATE EXTENSION IF NOT EXISTS vector;');
       
       // Register vector type for this client (for initialization context)
-      await pgvector.registerType(client);
+      await pgvector.registerTypes(client);
 
       // Create tables
       await client.query(`
@@ -134,7 +139,7 @@ export async function saveChunks(chunks: Array<{ resumeId?: string; jobDescripti
   const client = await dbPool.connect();
   
   try {
-    await pgvector.registerType(client);
+    await pgvector.registerTypes(client);
     await client.query('BEGIN');
     
     for (const chunk of chunks) {
@@ -156,30 +161,42 @@ export async function saveChunks(chunks: Array<{ resumeId?: string; jobDescripti
 
 export async function getChunksByResumeId(resumeId: string): Promise<DocumentChunk[]> {
   const dbPool = await getPool();
-  const result = await dbPool.query('SELECT * FROM document_chunks WHERE resume_id = $1', [resumeId]);
-  return result.rows.map(row => ({
-    id: row.id,
-    resumeId: row.resume_id,
-    jobDescriptionId: row.job_description_id,
-    content: row.content,
-    chunkType: row.chunk_type,
-    embedding: row.embedding,
-    createdAt: row.created_at
-  }));
+  const client = await dbPool.connect();
+  try {
+    await pgvector.registerTypes(client);
+    const result = await client.query('SELECT * FROM document_chunks WHERE resume_id = $1', [resumeId]);
+    return result.rows.map(row => ({
+      id: row.id,
+      resumeId: row.resume_id,
+      jobDescriptionId: row.job_description_id,
+      content: row.content,
+      chunkType: row.chunk_type,
+      embedding: row.embedding,
+      createdAt: row.created_at
+    }));
+  } finally {
+    client.release();
+  }
 }
 
 export async function getChunksByJobDescriptionId(jobDescriptionId: string): Promise<DocumentChunk[]> {
   const dbPool = await getPool();
-  const result = await dbPool.query('SELECT * FROM document_chunks WHERE job_description_id = $1', [jobDescriptionId]);
-  return result.rows.map(row => ({
-    id: row.id,
-    resumeId: row.resume_id,
-    jobDescriptionId: row.job_description_id,
-    content: row.content,
-    chunkType: row.chunk_type,
-    embedding: row.embedding,
-    createdAt: row.created_at
-  }));
+  const client = await dbPool.connect();
+  try {
+    await pgvector.registerTypes(client);
+    const result = await client.query('SELECT * FROM document_chunks WHERE job_description_id = $1', [jobDescriptionId]);
+    return result.rows.map(row => ({
+      id: row.id,
+      resumeId: row.resume_id,
+      jobDescriptionId: row.job_description_id,
+      content: row.content,
+      chunkType: row.chunk_type,
+      embedding: row.embedding,
+      createdAt: row.created_at
+    }));
+  } finally {
+    client.release();
+  }
 }
 
 export async function findSimilarChunks(embedding: number[], resumeId: string, limit: number = 5): Promise<Array<DocumentChunk & { similarity: number }>> {

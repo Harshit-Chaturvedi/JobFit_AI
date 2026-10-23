@@ -7,6 +7,7 @@ import JobDescriptionInput from "@/components/JobDescriptionInput";
 import AnalysisResults from "@/components/AnalysisResults";
 import CareerPlanResults from "@/components/CareerPlanResults";
 import SemanticMatchResults from "@/components/SemanticMatchResults";
+import CareerChat from "@/components/CareerChat";
 import { parseResume, analyzeMatch, generateCareerPlan, performSemanticMatch } from "@/lib/api";
 import { AnalysisResult, CareerPlanResult, SemanticMatchResponse } from "@/types/analysis";
 
@@ -282,6 +283,15 @@ export default function AnalyzePage() {
             {careerPlan && (
               <CareerPlanResults plan={careerPlan} />
             )}
+
+            {/* Career Assistant Chat */}
+            <CareerChat
+              resumeText={resumeText}
+              jobDescription={jobDescription}
+              analysis={result}
+              semanticResult={semanticResult}
+              careerPlan={careerPlan}
+            />
 
             <button
               onClick={handleReset}

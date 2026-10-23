@@ -122,3 +122,19 @@ export interface SemanticMatchResponse {
   resumeId: string;
   jobDescriptionId: string;
 }
+
+export interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+export interface ChatSource {
+  type: "resume" | "job_description" | "analysis" | "semantic" | "career_plan";
+  content: string;
+}
+
+export interface ChatResponse {
+  message: string;
+  sources: ChatSource[];
+}
+

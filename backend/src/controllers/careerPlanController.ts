@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { generateCareerPlan } from "../services/careerPlanService";
 import { CareerPlanRequest } from "../types/careerPlan";
 import { AnalysisResult } from "../types/analysis";
+import { validateTextInputs } from "../middleware/apiProtection";
 
 export async function careerPlanController(
   req: Request,
@@ -10,13 +11,7 @@ export async function careerPlanController(
   try {
     const { resumeText, jobDescription, analysis } = req.body as CareerPlanRequest;
 
-    if (!resumeText || typeof resumeText !== "string" || resumeText.trim().length === 0) {
-      res.status(400).json({ error: "Resume text is required." });
-      return;
-    }
-
-    if (!jobDescription || typeof jobDescription !== "string" || jobDescription.trim().length === 0) {
-      res.status(400).json({ error: "Job description is required." });
+    if (!validateTextInputs(resumeText, jobDescription, res)) {
       return;
     }
 

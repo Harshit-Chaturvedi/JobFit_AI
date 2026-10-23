@@ -84,3 +84,32 @@ export async function performSemanticMatch(
 
   return data;
 }
+
+export async function sendChatMessage(params: {
+  resumeText: string;
+  jobDescription: string;
+  message: string;
+  conversationHistory: import("@/types/analysis").ChatMessage[];
+  analysis?: import("@/types/analysis").AnalysisResult;
+  semanticResult?: {
+    semanticScore: number;
+    matchedRequirements: Array<{ requirement: string; similarity: number }>;
+    unmatchedRequirements: string[];
+  };
+  careerPlan?: import("@/types/analysis").CareerPlanResult;
+}): Promise<import("@/types/analysis").ChatResponse> {
+  const res = await fetch(`${API_BASE}/chat`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(params),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(data.error || "Failed to send message.");
+  }
+
+  return data;
+}
+

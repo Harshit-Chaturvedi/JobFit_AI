@@ -165,7 +165,7 @@ JobFit/
 
 ### Prerequisites
 
-- **Node.js** >= 18
+- **Node.js** >= 22
 - **npm** >= 9
 - **Google Gemini API Key** — [Get one here](https://aistudio.google.com/apikey)
 - *(Optional)* **PostgreSQL with pgvector** (e.g., via Docker or Supabase/Neon)
@@ -190,7 +190,11 @@ Or enable pgvector in an existing PostgreSQL instance:
 CREATE EXTENSION IF NOT EXISTS vector;
 ```
 
-*Note: If `DATABASE_URL` is omitted, JobFit AI automatically runs in-memory vector matching so you can test all features without running a database.*
+*Note: JobFit AI runs semantic matching in memory by default. It only persists resume-derived data when both `DATABASE_URL` is set and `PERSIST_ANALYSES=true`.*
+
+### Security configuration
+
+Set `CORS_ORIGINS` to the comma-separated URLs of the frontends allowed to call the API (the development default is `http://localhost:3000`). Requests are rate limited per IP address. Resume and job-description data are intentionally not persisted by default; enable `PERSIST_ANALYSES` only after adding authentication, ownership enforcement, retention, and deletion controls for user data.
 
 ### Backend Setup
 

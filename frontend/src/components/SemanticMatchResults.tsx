@@ -1,13 +1,13 @@
 "use client";
 
-import { SemanticMatchResponse, RequirementMatch, EvidenceItem } from "@/types/analysis";
+import { SemanticMatchResponse } from "@/types/analysis";
 
 interface SemanticMatchResultsProps {
   semanticResult: SemanticMatchResponse;
 }
 
 export default function SemanticMatchResults({ semanticResult }: SemanticMatchResultsProps) {
-  const { semanticScore, finalScore, scoreBreakdown, matchedRequirements, unmatchedRequirements, evidence } = semanticResult;
+  const { semanticScore, finalScore, scoreBreakdown, matchedRequirements, unmatchedRequirements } = semanticResult;
 
   const scoreColor =
     semanticScore >= 75 ? "text-emerald-400" : semanticScore >= 50 ? "text-amber-400" : "text-red-400";
