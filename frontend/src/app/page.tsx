@@ -13,6 +13,7 @@ export default function Home() {
         <div className="hidden sm:flex items-center gap-6">
           <a href="#features" className="text-slate-400 hover:text-white transition-colors text-sm">Features</a>
           <a href="#how-it-works" className="text-slate-400 hover:text-white transition-colors text-sm">How It Works</a>
+          <Link href="/dashboard" className="text-slate-400 hover:text-white transition-colors text-sm">Dashboard</Link>
         </div>
       </nav>
 

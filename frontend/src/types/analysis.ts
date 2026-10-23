@@ -138,3 +138,21 @@ export interface ChatResponse {
   sources: ChatSource[];
 }
 
+export interface ResumeTailorResult {
+  headline: string;
+  professionalSummary: string;
+  skillsToPrioritize: string[];
+  bulletSuggestions: Array<{ originalFocus: string; suggestion: string }>;
+  atsKeywords: string[];
+  warnings: string[];
+}
+
+export interface SavedAnalysis {
+  id: string;
+  createdAt: string;
+  label: string;
+  jobDescription: string;
+  result: AnalysisResult;
+  careerPlan?: CareerPlanResult | null;
+}
+

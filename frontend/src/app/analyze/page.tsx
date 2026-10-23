@@ -8,6 +8,9 @@ import AnalysisResults from "@/components/AnalysisResults";
 import CareerPlanResults from "@/components/CareerPlanResults";
 import SemanticMatchResults from "@/components/SemanticMatchResults";
 import CareerChat from "@/components/CareerChat";
+import ResumeTailor from "@/components/ResumeTailor";
+import JobComparison from "@/components/JobComparison";
+import AnalysisActions from "@/components/AnalysisActions";
 import { parseResume, analyzeMatch, generateCareerPlan, performSemanticMatch } from "@/lib/api";
 import { AnalysisResult, CareerPlanResult, SemanticMatchResponse } from "@/types/analysis";
 
@@ -210,6 +213,12 @@ export default function AnalyzePage() {
         {(status === "done" || status === "generating-plan" || status === "plan-done") && result && (
           <div className="space-y-6">
             <AnalysisResults result={result} />
+
+            <AnalysisActions result={result} jobDescription={jobDescription} careerPlan={careerPlan} />
+
+            <ResumeTailor resumeText={resumeText} jobDescription={jobDescription} />
+
+            <JobComparison resumeText={resumeText} currentDescription={jobDescription} currentResult={result} />
 
             {/* Semantic Matching Section */}
             {semanticLoading && (

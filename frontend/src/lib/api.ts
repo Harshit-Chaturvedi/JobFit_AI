@@ -113,3 +113,14 @@ export async function sendChatMessage(params: {
   return data;
 }
 
+export async function tailorResume(resumeText: string, jobDescription: string): Promise<import("@/types/analysis").ResumeTailorResult> {
+  const res = await fetch(`${API_BASE}/resume/tailor`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ resumeText, jobDescription }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Failed to tailor resume.");
+  return data;
+}
+

@@ -6,6 +6,7 @@ import { matchingRouter } from "./routes/matching";
 import { careerPlanRouter } from "./routes/careerPlan";
 import { semanticRouter } from "./routes/semantic";
 import { chatRouter } from "./routes/chat";
+import { tailorRouter } from "./routes/tailor";
 import { apiRateLimiter } from "./middleware/apiProtection";
 import { config } from "./config/env";
 
@@ -31,6 +32,7 @@ app.use("/api", matchingRouter);
 app.use("/api", careerPlanRouter);
 app.use("/api", semanticRouter);
 app.use("/api", chatRouter);
+app.use("/api", tailorRouter);
 
 // Global error handler for multer and other errors
 app.use(
