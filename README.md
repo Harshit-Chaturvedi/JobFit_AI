@@ -1,214 +1,125 @@
-# JobFit AI
+<div align="center">
 
-**AI-powered resume analysis, semantic job matching, and candidate improvement.**
+# ✨ JobFit AI
 
-Upload your resume, paste a job description, and get instant multi-layer matching — combining semantic vector search, LLM reasoning, and explicit skill verification — with actionable recommendations to maximize your hiring fit.
+### Know how well you fit a role — before you apply.
 
----
+**An AI-powered workspace for analyzing resumes, comparing opportunities, and planning a stronger application.**
 
-## Features
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-22+-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Gemini](https://img.shields.io/badge/AI-Gemini-4285F4?logo=google)](https://aistudio.google.com/)
+[![License](https://img.shields.io/badge/License-MIT-22c55e)](LICENSE)
 
-### 🔍 Semantic Matching & Vector Search *(New)*
-Move beyond basic keyword searching with an embedding-driven semantic layer:
-- **Vector Embeddings** — Documents are chunked into logical sections and embedded using `text-embedding-004` (768 dimensions).
-- **PostgreSQL + pgvector** — Efficient similarity search using cosine distance (`<=>`) with database indexing.
-- **Requirement Evidence Matching** — Maps each job requirement to relevant resume excerpts with similarity percentages.
-- **Composite Scoring** — Transparently blends vector similarity (35%), LLM analysis (45%), and explicit skill presence (20%).
-- **Graceful Fallback** — Operates seamlessly with in-memory vector comparison if PostgreSQL is offline, preserving existing LLM analysis.
+`Resume intelligence` · `Semantic matching` · `Career action plans`
 
-### ✅ Resume Match Analysis
-- **Match Score** — Overall fit percentage (0–100%)
-- **Matching Skills** — Skills found in resume that match the job posting
-- **Missing Skills** — Skills required by the job but absent from the resume
-- **Relevant Experience** — Work history highlights aligning with the role
-- **Strengths & Improvements** — Key advantages and specific areas to target
-
-### 🚀 Candidate Improvement Plan
-- **Candidate Summary** — Executive overview, top strength, biggest gap, and next step
-- **Missing Skills Breakdown** — Importance level (High/Medium/Low), learning effort, and target actions
-- **Resume Improvement** — Role-grounded bullet optimizations without fabricating experience
-- **Target Project Ideas** — 2–3 portfolio projects bridging profile gaps
-- **Learning Roadmap** — Three-tier prioritized timeline (Must Learn, Should Learn, Nice to Have)
+</div>
 
 ---
 
-## Architecture: How Semantic Matching Works
+## 🌟 What JobFit AI does
 
-```
-Resume PDF                             Job Description
-    ↓                                         ↓
-Extract Text                           Extract Sections & Requirements
-    ↓                                         ↓
-Section Chunking                       Section & Item Chunking
-(Summary, Skills, Exp, Education)      (Responsibilities, Skills, Quals)
-    ↓                                         ↓
-Generate Embeddings                    Generate Embeddings
-(text-embedding-004)                   (text-embedding-004)
-    ↓                                         ↓
-PostgreSQL + pgvector                  Vector Comparison
-(Persisted with metadata)              (Cosine Similarity)
-    └──────────────────────┬──────────────────┘
-                           ↓
-                Semantic Match Score (35%)
-                + LLM Analysis Score (45%)
-                + Explicit Skill Match (20%)
-                           ↓
-                  Final Composite Score
-```
+JobFit AI turns a resume and a job description into a practical, evidence-led application strategy. It combines language-model reasoning, vector similarity, and explicit skill verification.
 
-### Why Embeddings & Vector Search?
-Traditional resume screeners rely on keyword counts. If a resume says *"Built distributed backend APIs in Go"* and the job requires *"Server-side microservice architecture"*, keyword search finds 0 matches despite near-identical experience. Embeddings capture semantic meaning in high-dimensional vector space, measuring conceptual alignment.
+| 🎯 Analyze | ⚖️ Compare | ✨ Improve |
+| :--- | :--- | :--- |
+| See a fit score, strengths, gaps, and relevant experience. | Compare one resume against up to four opportunities. | Get truthful resume wording, project ideas, and a learning roadmap. |
 
-### Keyword Matching vs. Semantic Matching
-- **Keyword Matching**: Fast and literal, but brittle against synonyms, phrasing differences, and abbreviations.
-- **Semantic Matching**: Understands context, related concepts, and domain equivalence.
-- **JobFit AI's Hybrid Rule**: *Semantic similarity provides supporting evidence, not proof.* Explicit skill claims in the resume remain the source of truth for claimed qualifications.
-
-### Why pgvector?
-- **Unified Stack**: Eliminates the operational overhead of a standalone vector database (Pinecone, Qdrant, etc.) by running vector search directly in PostgreSQL alongside relational data (`resumes`, `job_descriptions`, `analyses`).
-- **ACID Transactions**: Enables atomic transactions between document chunks, vector embeddings, and analysis metadata.
-- **Familiar SQL**: Queries use standard SQL with vector operators (`<=>` for cosine distance).
-
-### Score Calculation Formula
-The final score is computed as a weighted linear combination:
-
-$$\text{Final Score} = (\text{Semantic Score} \times 0.35) + (\text{LLM Score} \times 0.45) + (\text{Skill Match Score} \times 0.20)$$
-
-Where:
-- **Semantic Score (35%)**: Average cosine similarity of job requirements matched against resume sections.
-- **LLM Score (45%)**: Qualitative fit assessed by Gemini 2.0 Flash considering depth, experience level, and role alignment.
-- **Skill Match Score (20%)**: Explicit keyword ratio: $\frac{\text{matchingSkills}}{\text{matchingSkills} + \text{missingSkills}} \times 100$.
-
-*All weights are configurable via environment variables (`SCORE_WEIGHT_SEMANTIC`, `SCORE_WEIGHT_LLM`, `SCORE_WEIGHT_SKILL`).*
+> [!IMPORTANT]
+> The resume is the source of truth. Recommendations improve presentation; they should not invent experience, achievements, or skills.
 
 ---
 
-## Tech Stack
+## 🚀 Feature tour
 
-| Layer             | Technology                                                       |
-| ----------------- | ---------------------------------------------------------------- |
-| **Frontend**      | Next.js 16, React, TypeScript, Tailwind CSS (App Router)         |
-| **Backend**       | Node.js, Express.js, TypeScript                                 |
-| **Database**      | PostgreSQL 15+ with `pgvector` extension                         |
-| **Embeddings**    | Google Gemini `text-embedding-004` (768 dimensions)              |
-| **LLM Reasoning** | Google Gemini 2.0 Flash (via `@google/generative-ai`)            |
-| **PDF Extraction**| `pdf-parse` v2                                                  |
+### 🔍 Evidence-backed semantic matching
+
+- **Vector embeddings** — Split resumes and job descriptions into meaningful sections before comparing them with Gemini embeddings.
+- **Requirement evidence** — Connect matching requirements to resume excerpts and call out unsupported requirements.
+- **Composite score** — Blend semantic similarity, LLM reasoning, and explicit skills into a configurable 0–100 score.
+- **Graceful fallback** — Run in memory by default; PostgreSQL + pgvector persistence is optional.
+
+### 🧭 Candidate improvement plan
+
+- A snapshot of the candidate's top strength, biggest gap, and next action.
+- Prioritized missing skills with realistic learning effort.
+- Role-specific resume improvements and portfolio project recommendations.
+- A three-tier roadmap: **Must Learn**, **Should Learn**, and **Nice to Have**.
+
+### 💬 Career assistant & ATS resume tailor
+
+- Ask grounded questions about a role, your score, and your next move.
+- Generate an ATS-aware headline, summary, keywords, and bullet suggestions.
+- Keep suggestions tied to the supplied resume.
+
+### 📊 Personal workflow tools
+
+- Compare multiple roles against one resume.
+- Export a clean, printable match report as a PDF through the browser print dialog.
+- Save analyses in the current browser and track roadmap tasks.
+- Optional local dashboard PIN for an extra layer of privacy on a shared device.
 
 ---
 
-## Project Structure
+## 🧠 How scoring works
 
-```
-JobFit/
-├── frontend/                          # Next.js application
-│   ├── src/
-│   │   ├── app/
-│   │   │   ├── page.tsx               # Landing page
-│   │   │   └── analyze/
-│   │   │       └── page.tsx           # Multi-stage analysis dashboard
-│   │   ├── components/
-│   │   │   ├── ResumeUpload.tsx
-│   │   │   ├── JobDescriptionInput.tsx
-│   │   │   ├── AnalysisResults.tsx    # LLM analysis UI
-│   │   │   ├── SemanticMatchResults.tsx # Semantic vector search UI
-│   │   │   └── CareerPlanResults.tsx  # Career plan roadmap UI
-│   │   ├── lib/
-│   │   │   └── api.ts                 # Typed API client
-│   │   └── types/
-│   │       └── analysis.ts            # Shared frontend types
-│   ├── .env.example
-│   └── package.json
-│
-├── backend/                           # Express API server
-│   ├── src/
-│   │   ├── config/
-│   │   │   └── env.ts                 # App & database configuration
-│   │   ├── controllers/
-│   │   │   ├── resumeController.ts
-│   │   │   ├── matchingController.ts
-│   │   │   ├── careerPlanController.ts
-│   │   │   └── semanticController.ts  # Semantic match controller
-│   │   ├── middleware/
-│   │   │   └── upload.ts              # Multer PDF upload configuration
-│   │   ├── routes/
-│   │   │   ├── health.ts
-│   │   │   ├── resume.ts
-│   │   │   ├── matching.ts
-│   │   │   ├── careerPlan.ts
-│   │   │   └── semantic.ts            # Semantic match routes
-│   │   ├── services/
-│   │   │   ├── aiService.ts           # Gemini LLM match reasoning
-│   │   │   ├── careerPlanService.ts   # Career plan generation
-│   │   │   ├── chunkingService.ts     # Intelligent section chunking
-│   │   │   ├── embeddingService.ts    # text-embedding-004 & cosine math
-│   │   │   ├── databaseService.ts     # PostgreSQL + pgvector connection pool
-│   │   │   ├── semanticMatchingService.ts # Vector search & evidence extraction
-│   │   │   └── matchScoringService.ts # Weighted composite scoring
-│   │   ├── tests/
-│   │   │   ├── careerPlan.test.ts     # Career plan test suite
-│   │   │   └── semanticMatching.test.ts # Vector search & chunking test suite
-│   │   ├── types/
-│   │   │   ├── analysis.ts            # LLM analysis types
-│   │   │   ├── careerPlan.ts          # Improvement plan types
-│   │   │   └── semantic.ts            # Vector & database types
-│   │   ├── app.ts
-│   │   └── index.ts
-│   ├── .env.example
-│   └── package.json
-│
-└── README.md
+```text
+  Resume PDF ──► text extraction ──► structured resume chunks ──┐
+                                                                  ├──► semantic evidence
+  Job description ────────────────► requirement chunks ──────────┘
+                                                                            │
+                 Gemini reasoning ───────────────► LLM fit score          │
+                 Explicit skill overlap ─────────► skill match score      │
+                                                                            ▼
+                                                           ┌────────────────────┐
+                                                           │  Final Match Score │
+                                                           └────────────────────┘
 ```
 
+| Signal | Default weight | What it measures |
+| :--- | :---: | :--- |
+| Semantic similarity | 35% | Conceptual alignment between requirements and resume evidence |
+| LLM reasoning | 45% | Nuanced role fit, seniority, and experience alignment |
+| Explicit skill match | 20% | Skills clearly evidenced in the resume |
+
+Weights can be changed with environment variables.
+
 ---
 
-## Getting Started
+## 🛠️ Tech stack
+
+| Area | Technology |
+| :--- | :--- |
+| Frontend | Next.js 16 · React 19 · TypeScript · Tailwind CSS |
+| Backend | Node.js · Express · TypeScript |
+| AI | Google Gemini 2.0 Flash · `text-embedding-004` |
+| Document parsing | `pdf-parse` |
+| Optional storage | PostgreSQL + pgvector |
+
+---
+
+## ⚡ Quick start
 
 ### Prerequisites
 
-- **Node.js** >= 22
-- **npm** >= 9
-- **Google Gemini API Key** — [Get one here](https://aistudio.google.com/apikey)
-- *(Optional)* **PostgreSQL with pgvector** (e.g., via Docker or Supabase/Neon)
+- Node.js **22+**
+- npm **9+**
+- A [Google Gemini API key](https://aistudio.google.com/apikey)
 
-### Database Setup (Optional for Persistence & Accelerated Search)
-
-You can run PostgreSQL with pgvector locally using Docker:
-
-```bash
-docker run -d \
-  --name jobfit-pgvector \
-  -e POSTGRES_USER=postgres \
-  -e POSTGRES_PASSWORD=postgres \
-  -e POSTGRES_DB=jobfit \
-  -p 5432:5432 \
-  pgvector/pgvector:pg16
-```
-
-Or enable pgvector in an existing PostgreSQL instance:
-
-```sql
-CREATE EXTENSION IF NOT EXISTS vector;
-```
-
-*Note: JobFit AI runs semantic matching in memory by default. It only persists resume-derived data when both `DATABASE_URL` is set and `PERSIST_ANALYSES=true`.*
-
-### Security configuration
-
-Set `CORS_ORIGINS` to the comma-separated URLs of the frontends allowed to call the API (the development default is `http://localhost:3000`). Requests are rate limited per IP address. Resume and job-description data are intentionally not persisted by default; enable `PERSIST_ANALYSES` only after adding authentication, ownership enforcement, retention, and deletion controls for user data.
-
-### Backend Setup
+### Start the API
 
 ```bash
 cd backend
 cp .env.example .env
-# Edit .env and supply GEMINI_API_KEY (and optional DATABASE_URL)
+# Add GEMINI_API_KEY to .env
 npm install
 npm run dev
 ```
 
-Server starts on [http://localhost:3001](http://localhost:3001).
+The API starts at `http://localhost:3001`.
 
-### Frontend Setup
+### Start the web app
 
 ```bash
 cd frontend
@@ -216,121 +127,86 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open **http://localhost:3000** and start with a PDF resume plus a job description.
 
 ---
 
-## Environment Variables
+## 🔐 Privacy & security
 
-### Backend (`backend/.env`)
+| Default behavior | Why it matters |
+| :--- | :--- |
+| Resume-derived data stays in memory | Sensitive resume content is not stored by default. |
+| Dashboard uses browser storage | Saved analyses stay in the current browser. |
+| CORS uses an allowlist | Set the production frontend in `CORS_ORIGINS`. |
+| API requests are rate-limited | Helps protect Gemini usage and the API. |
 
-| Variable                 | Required | Default                   | Description                                    |
-| ------------------------ | -------- | ------------------------- | ---------------------------------------------- |
-| `PORT`                   | No       | `3001`                    | Server port                                    |
-| `NODE_ENV`               | No       | `development`             | Environment                                    |
-| `GEMINI_API_KEY`         | **Yes**  | —                         | Google Gemini API key                          |
-| `DATABASE_URL`           | No       | `""`                      | PostgreSQL connection string (`postgresql://`)|
-| `EMBEDDING_MODEL`        | No       | `text-embedding-004`      | Embedding model name                           |
-| `EMBEDDING_DIMENSION`    | No       | `768`                     | Vector dimensions                              |
-| `SCORE_WEIGHT_SEMANTIC`  | No       | `0.35`                    | Semantic similarity weight (35%)               |
-| `SCORE_WEIGHT_LLM`       | No       | `0.45`                    | LLM analysis weight (45%)                      |
-| `SCORE_WEIGHT_SKILL`     | No       | `0.20`                    | Skill match weight (20%)                       |
-
-### Frontend (`frontend/.env`)
-
-| Variable                | Required | Default                    | Description         |
-| ----------------------- | -------- | -------------------------- | ------------------- |
-| `NEXT_PUBLIC_API_URL`   | No       | `http://localhost:3001/api`| Backend API base URL|
+> [!WARNING]
+> Enable `PERSIST_ANALYSES=true` only after adding accounts, record ownership checks, and data retention/deletion controls. The dashboard PIN is a local browser lock, not cloud authentication.
 
 ---
 
-## API Endpoints
+## ⚙️ Configuration
 
-| Method | Endpoint                | Description                                       |
-| ------ | ----------------------- | ------------------------------------------------- |
-| `GET`  | `/api/health`           | Health check                                      |
-| `POST` | `/api/resume/parse`     | Upload and extract plain text from PDF resume     |
-| `POST` | `/api/matching/analyze` | LLM-based resume match analysis                   |
-| `POST` | `/api/semantic-match`   | **(New)** Vector embedding similarity & composite score |
-| `POST` | `/api/career-plan`      | Personalized candidate improvement plan           |
+Create `backend/.env` from `backend/.env.example`.
 
-### `POST /api/semantic-match`
+| Variable | Default | Purpose |
+| :--- | :--- | :--- |
+| `GEMINI_API_KEY` | — | Required Gemini API key |
+| `PORT` | `3001` | Backend port |
+| `CORS_ORIGINS` | `http://localhost:3000` | Comma-separated allowed browser origins |
+| `RATE_LIMIT_WINDOW_MS` | `900000` | Rate-limit window |
+| `RATE_LIMIT_MAX_REQUESTS` | `30` | Requests allowed per IP per window |
+| `PERSIST_ANALYSES` | `false` | Enables optional PostgreSQL persistence |
+| `DATABASE_URL` | empty | PostgreSQL connection string |
+| `SCORE_WEIGHT_SEMANTIC` | `0.35` | Semantic signal weight |
+| `SCORE_WEIGHT_LLM` | `0.45` | LLM signal weight |
+| `SCORE_WEIGHT_SKILL` | `0.20` | Explicit-skill signal weight |
 
-Performs vector search comparing resume chunks against job requirements.
+For another API host, add this to `frontend/.env.local`:
 
-- **Request Body (Direct Text or Database IDs):**
-```json
-{
-  "resumeText": "Extracted resume text...",
-  "jobDescription": "Job posting text...",
-  "llmAnalysis": {
-    "matchScore": 82,
-    "matchingSkills": ["Node.js", "PostgreSQL"],
-    "missingSkills": ["Docker"]
-  }
-}
-```
-
-- **Response:**
-```json
-{
-  "semanticScore": 84,
-  "finalScore": 81,
-  "scoreBreakdown": {
-    "semanticScore": 84,
-    "llmScore": 82,
-    "skillMatchScore": 67,
-    "finalScore": 81,
-    "weights": {
-      "semantic": 0.35,
-      "llm": 0.45,
-      "skillMatch": 0.20
-    }
-  },
-  "matchedRequirements": [
-    {
-      "requirement": "Proficiency with Node.js and REST APIs",
-      "matchedContent": "Engineered REST microservices in Node.js...",
-      "similarity": 0.88,
-      "chunkType": "experience"
-    }
-  ],
-  "unmatchedRequirements": [
-    "Experience deploying containers to Kubernetes"
-  ],
-  "evidence": [
-    {
-      "requirement": "Proficiency with Node.js and REST APIs",
-      "resumeExcerpt": "Engineered REST microservices in Node.js...",
-      "similarity": 0.88,
-      "sourceSection": "experience"
-    }
-  ],
-  "resumeId": "b1836e2f-...",
-  "jobDescriptionId": "c4932a1e-..."
-}
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:3001/api
 ```
 
 ---
 
-## Running Automated Tests
+## 🔌 API at a glance
 
-Run the backend test suites verifying chunking, vector math, fallback handling, and scoring:
+| Method | Endpoint | Description |
+| :---: | :--- | :--- |
+| `GET` | `/api/health` | Service health check |
+| `POST` | `/api/resume/parse` | Extract text from a PDF resume |
+| `POST` | `/api/matching/analyze` | Generate the match analysis |
+| `POST` | `/api/semantic-match` | Return semantic evidence and a composite score |
+| `POST` | `/api/career-plan` | Generate an improvement plan |
+| `POST` | `/api/resume/tailor` | Generate ATS-tailoring suggestions |
+| `POST` | `/api/chat` | Ask the grounded career assistant |
+
+---
+
+## 🧪 Quality checks
 
 ```bash
 cd backend
-
-# Run Semantic Matching & Vector Search tests (46 assertions)
+npm run lint
 npx ts-node src/tests/semanticMatching.test.ts
-
-# Run Candidate Improvement Plan tests (54 assertions)
 npx ts-node src/tests/careerPlan.test.ts
+npx ts-node src/tests/careerChat.test.ts
+
+cd ../frontend
+npm run lint
 ```
 
-All 100 tests run self-contained and execute in under 3 seconds without external dependencies.
+The backend suites cover chunking, cosine similarity, scoring, career plan validation, and chat context construction.
 
 ---
 
-## License
+<div align="center">
 
-MIT
+Built for more confident applications. ✦
+
+**Start analyzing →**
+
+MIT License
+
+</div>
