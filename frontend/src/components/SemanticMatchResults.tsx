@@ -22,7 +22,7 @@ export default function SemanticMatchResults({ semanticResult }: SemanticMatchRe
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-medium mb-2">
-              <span>⚡ Vector Search & Embeddings</span>
+              <span>Vector similarity</span>
             </div>
             <h2 className="text-xl font-bold text-white">Semantic Match Analysis</h2>
             <p className="text-slate-400 text-xs mt-1">
@@ -67,7 +67,7 @@ export default function SemanticMatchResults({ semanticResult }: SemanticMatchRe
       {/* Matched Requirements with Evidence */}
       <div className="space-y-3">
         <h3 className="text-sm font-semibold text-slate-200 flex items-center gap-2">
-          <span>🎯 Matched Requirements ({matchedRequirements.length})</span>
+          <span>Matched requirements ({matchedRequirements.length})</span>
         </h3>
 
         {matchedRequirements.length === 0 ? (
@@ -113,7 +113,7 @@ export default function SemanticMatchResults({ semanticResult }: SemanticMatchRe
       {unmatchedRequirements.length > 0 && (
         <div className="space-y-3">
           <h3 className="text-sm font-semibold text-slate-200 flex items-center gap-2">
-            <span>⚠️ Unmatched Requirements ({unmatchedRequirements.length})</span>
+            <span>Requirements without evidence ({unmatchedRequirements.length})</span>
           </h3>
 
           <div className="grid grid-cols-1 gap-2.5">

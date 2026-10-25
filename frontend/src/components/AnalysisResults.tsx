@@ -122,13 +122,13 @@ export default function AnalysisResults({ result }: AnalysisResultsProps) {
         <Section
           title="Matching Skills"
           items={result.matchingSkills}
-          icon="✅"
+          icon="+"
           variant="success"
         />
         <Section
           title="Missing Skills"
           items={result.missingSkills}
-          icon="⚠️"
+          icon="−"
           variant="warning"
         />
       </div>
@@ -138,13 +138,13 @@ export default function AnalysisResults({ result }: AnalysisResultsProps) {
         <Section
           title="Relevant Experience"
           items={result.matchingExperience}
-          icon="💼"
+          icon="↗"
           variant="success"
         />
         <Section
           title="Missing Requirements"
           items={result.missingRequirements}
-          icon="📋"
+          icon="−"
           variant="warning"
         />
       </div>
@@ -154,13 +154,13 @@ export default function AnalysisResults({ result }: AnalysisResultsProps) {
         <Section
           title="Strengths"
           items={result.strengths}
-          icon="💪"
+          icon="+"
           variant="success"
         />
         <Section
           title="Areas to Improve"
           items={result.improvements}
-          icon="🎯"
+          icon="→"
           variant="default"
         />
       </div>

@@ -44,29 +44,33 @@ export async function generateEmbeddings(texts: string[]): Promise<number[][]> {
     return [];
   }
 
+  const genAI = new GoogleGenerativeAI(config.geminiApiKey);
+  const model = genAI.getGenerativeModel({ model: config.embeddingModel });
   const results: number[][] = [];
-  const batchSize = 5;
+  const batchSize = 100;
 
   for (let i = 0; i < texts.length; i += batchSize) {
     const batch = texts.slice(i, i + batchSize);
-    
-    const batchPromises = batch.map(text => 
-      generateEmbedding(text).catch(error => {
-        console.error(`[embeddingService] Embedding failed for text batch item:`, error);
-        return [];
-      })
-    );
 
-    const batchResults = await Promise.all(batchPromises);
-    results.push(...batchResults);
+    try {
+      const response = await model.batchEmbedContents({
+        requests: batch.map((text) => ({
+          content: { parts: [{ text }], role: "user" },
+          embedContentConfig: {
+            outputDimensionality: config.embeddingDimension,
+            taskType: "SEMANTIC_SIMILARITY",
+          },
+        } as any)),
+      });
 
-    // Wait 100ms between batches to avoid rate limiting
-    if (i + batchSize < texts.length) {
-      await new Promise(resolve => setTimeout(resolve, 100));
+      results.push(...response.embeddings.map((embedding) => embedding.values));
+    } catch (error) {
+      console.error(`[embeddingService] Embedding batch failed:`, error);
+      results.push(...batch.map(() => []));
     }
   }
 
-  console.log(`[embeddingService] Generated ${texts.length} embeddings`);
+  console.log(`[embeddingService] Generated ${results.filter((embedding) => embedding.length > 0).length}/${texts.length} embeddings`);
   return results;
 }
 
