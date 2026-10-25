@@ -45,7 +45,7 @@ export async function analyzeMatch(
   }
 
   const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-3.8-flash" });
 
   const prompt = ANALYSIS_PROMPT
     .replace("{resumeText}", resumeText)

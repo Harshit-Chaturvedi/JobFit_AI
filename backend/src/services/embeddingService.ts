@@ -16,7 +16,13 @@ export async function generateEmbedding(text: string): Promise<number[]> {
   try {
     const genAI = new GoogleGenerativeAI(config.geminiApiKey);
     const model = genAI.getGenerativeModel({ model: config.embeddingModel });
-    const result = await model.embedContent(text);
+    const result = await model.embedContent({
+      content: { parts: [{ text }], role: "user" },
+      embedContentConfig: {
+        outputDimensionality: config.embeddingDimension,
+        taskType: "SEMANTIC_SIMILARITY",
+      },
+    } as Parameters<typeof model.embedContent>[0]);
     const embedding = result.embedding.values;
 
     if (embedding.length !== config.embeddingDimension) {

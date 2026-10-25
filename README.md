@@ -69,7 +69,7 @@ Gemini reasoning ────────────► LLM fit signal ──�
 Skill overlap ───────────────► Explicit skill signal ──────────────────────────┘
 ```
 
-Weights can be adjusted with the `SCORE_WEIGHT_*` environment variables. Semantic similarity is supporting evidence; it does not prove a qualification or replace human judgment.
+Weights can be adjusted with the `SCORE_WEIGHT_*` environment variables. Semantic similarity is supporting evidence; it does not prove a qualification or replace human judgment. The app uses Gemini 3.8 Flash for reasoning and Gemini Embedding 2 for semantic matching.
 
 ## ⚡ Get started
 
@@ -131,7 +131,7 @@ The backend loads settings from `backend/.env`:
 | `RATE_LIMIT_MAX_REQUESTS` | `30` | Requests allowed per IP in each window. |
 | `PERSIST_ANALYSES` | `false` | Enables PostgreSQL persistence when set to `true`. |
 | `DATABASE_URL` | empty | PostgreSQL connection string. |
-| `EMBEDDING_MODEL` | `text-embedding-004` | Gemini embedding model name. |
+| `EMBEDDING_MODEL` | `gemini-embedding-2` | Gemini embedding model name. |
 | `EMBEDDING_DIMENSION` | `768` | Expected vector dimension. Must match the selected embedding model and database schema. |
 | `SCORE_WEIGHT_SEMANTIC` | `0.35` | Semantic score weight. |
 | `SCORE_WEIGHT_LLM` | `0.45` | LLM score weight. |

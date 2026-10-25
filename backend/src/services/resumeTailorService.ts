@@ -40,7 +40,7 @@ export function normalizeTailorResult(value: unknown): ResumeTailorResult {
 
 export async function tailorResume(resumeText: string, jobDescription: string): Promise<ResumeTailorResult> {
   if (!config.geminiApiKey) throw new Error("Gemini API key is not configured.");
-  const model = new GoogleGenerativeAI(config.geminiApiKey).getGenerativeModel({ model: "gemini-2.0-flash" });
+  const model = new GoogleGenerativeAI(config.geminiApiKey).getGenerativeModel({ model: "gemini-3.8-flash" });
   const response = await model.generateContent(`${prompt}\n\nRESUME:\n${resumeText}\n\nJOB DESCRIPTION:\n${jobDescription}`);
   const cleaned = response.response.text().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
   try {

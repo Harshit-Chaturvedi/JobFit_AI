@@ -71,7 +71,7 @@ export async function handleChatMessage(params: CareerChatParams): Promise<ChatR
 
   // Call Gemini
   const genAI = new GoogleGenerativeAI(config.geminiApiKey);
-  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-3.8-flash" });
 
   const result = await model.generateContent(fullPrompt);
   const responseText = result.response.text();

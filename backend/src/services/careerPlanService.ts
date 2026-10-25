@@ -158,7 +158,7 @@ export async function generateCareerPlan(
   }
 
   const genAI = new GoogleGenerativeAI(config.geminiApiKey);
-  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+  const model = genAI.getGenerativeModel({ model: "gemini-3.8-flash" });
 
   const fullPrompt = `${CAREER_PLAN_PROMPT}
 

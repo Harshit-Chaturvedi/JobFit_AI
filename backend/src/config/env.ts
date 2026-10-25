@@ -32,7 +32,7 @@ export const config = {
   nodeEnv: process.env.NODE_ENV || "development",
   geminiApiKey: process.env.GEMINI_API_KEY || "",
   databaseUrl: process.env.DATABASE_URL || "",
-  embeddingModel: process.env.EMBEDDING_MODEL || "text-embedding-004",
+  embeddingModel: process.env.EMBEDDING_MODEL || "gemini-embedding-2",
   embeddingDimension: positiveInteger(process.env.EMBEDDING_DIMENSION, 768),
   scoreWeights,
   corsOrigins: (process.env.CORS_ORIGINS || "http://localhost:3000")
