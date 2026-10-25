@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { handleChatMessage } from "../services/careerChatService";
+import { isTransientGeminiError } from "../services/geminiRequest";
 import {
   MAX_HISTORY_CONTENT_LENGTH,
   MAX_HISTORY_TOTAL_LENGTH,
@@ -71,6 +72,10 @@ export async function chatController(req: Request, res: Response): Promise<void>
     console.error("[chatController] Error:", error);
     const msg = error instanceof Error ? error.message : "Chat request failed.";
 
+    if (isTransientGeminiError(error)) {
+      res.status(503).json({ error: "The Career Assistant is temporarily busy. Please try again in a moment." });
+      return;
+    }
     if (msg.includes("API key")) {
       res.status(503).json({ error: msg });
       return;

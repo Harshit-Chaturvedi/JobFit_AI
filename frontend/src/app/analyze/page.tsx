@@ -140,7 +140,7 @@ export default function AnalyzePage() {
         </Link>
       </nav>
 
-      <main className="max-w-4xl mx-auto px-6 py-12 sm:py-16">
+      <main className="analysis-main">
         <div className="mb-9 max-w-2xl">
           <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
             Review your fit for this role
@@ -239,7 +239,7 @@ export default function AnalyzePage() {
             {semanticError && !semanticLoading && (
               <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 flex items-center justify-between gap-3">
                 <p className="text-amber-400 text-xs">
-                  ⚠️ Semantic vector matching: {semanticError} (LLM analysis remains fully active).
+                  Semantic vector matching: {semanticError} (LLM analysis remains fully active).
                 </p>
                 <button
                   onClick={() => fetchSemanticMatch(resumeText, jobDescription.trim(), result)}
@@ -260,9 +260,9 @@ export default function AnalyzePage() {
                 )}
                 <button
                   onClick={handleGeneratePlan}
-                  className="w-full py-3.5 rounded-xl font-semibold bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-400 hover:to-purple-400 text-white shadow-lg shadow-indigo-500/25 hover:shadow-indigo-400/30 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+                  className="analysis-result-action w-full py-3.5 rounded-xl font-semibold bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-400 hover:to-purple-400 text-white shadow-lg shadow-indigo-500/25 hover:shadow-indigo-400/30 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
                 >
-                  🚀 Generate My Improvement Plan
+                  Generate an improvement plan
                 </button>
               </div>
             )}

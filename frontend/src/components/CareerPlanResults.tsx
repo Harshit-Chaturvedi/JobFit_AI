@@ -26,7 +26,7 @@ function CandidateSummary({ plan }: { plan: CareerPlanResult }) {
   return (
     <div className="rounded-xl border border-indigo-500/30 bg-indigo-500/5 p-6">
       <h2 className="text-lg font-semibold text-white mb-3">
-        📊 Your Candidate Summary
+        Candidate summary
       </h2>
       <p className="text-slate-300 text-sm leading-relaxed mb-5">
         {candidateSummary.overviewStatement}
@@ -79,7 +79,7 @@ function MissingSkillsSection({
   return (
     <div>
       <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-        🎯 Missing Skills Analysis
+        Missing skills analysis
       </h2>
       <div className="space-y-3">
         {skills.map((skill, i) => (
@@ -117,10 +117,10 @@ function SkillCard({ skill }: { skill: MissingSkillAnalysis }) {
       </div>
       <p className="text-sm text-slate-400 mb-2">{skill.reason}</p>
       <p className={`text-xs mb-2 ${difficultyColor}`}>
-        ⏱ {skill.learningDifficulty}
+        {skill.learningDifficulty}
       </p>
       <p className="text-sm text-indigo-300 bg-indigo-500/10 rounded-lg px-3 py-2">
-        💡 {skill.recommendation}
+        {skill.recommendation}
       </p>
     </div>
   );
@@ -142,32 +142,32 @@ function ResumeImprovementSection({ plan }: { plan: CareerPlanResult }) {
   return (
     <div>
       <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-        📝 How to Improve Your Resume
+        Resume improvements
       </h2>
       <div className="space-y-3">
         <ResumeList
           title="Skills to Highlight"
-          icon="⭐"
+          icon="+"
           items={resumeImprovement.skillsToHighlight}
         />
         <ResumeList
           title="Relevant Projects to Emphasize"
-          icon="🔗"
+          icon="↗"
           items={resumeImprovement.relevantProjects}
         />
         <ResumeList
           title="Keywords to Mention"
-          icon="🔑"
+          icon="•"
           items={resumeImprovement.keywordsToMention}
         />
         <ResumeList
           title="Sections to Improve"
-          icon="🔧"
+          icon="→"
           items={resumeImprovement.sectionsToImprove}
         />
         <ResumeList
           title="Project Description Suggestions"
-          icon="✍️"
+          icon="+"
           items={resumeImprovement.projectDescriptionSuggestions}
         />
       </div>
@@ -216,7 +216,7 @@ function ProjectRecommendationsSection({
   return (
     <div>
       <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-        🚀 Projects That Can Improve Your Profile
+        Projects to strengthen your profile
       </h2>
       <div className="space-y-4">
         {projects.map((project, i) => (
@@ -258,7 +258,7 @@ function ProjectCard({
           </span>
           {project.estimatedTime && (
             <span className="text-xs text-slate-500">
-              ⏱ {project.estimatedTime}
+              {project.estimatedTime}
             </span>
           )}
         </div>
@@ -304,7 +304,7 @@ function LearningRoadmapSection({ plan }: { plan: CareerPlanResult }) {
   return (
     <div>
       <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-        🗺️ Your Learning Roadmap
+        Learning roadmap
       </h2>
       <div className="space-y-4">
         <RoadmapPriority

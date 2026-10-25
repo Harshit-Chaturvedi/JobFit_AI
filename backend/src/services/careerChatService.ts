@@ -4,6 +4,7 @@ import { ChatMessage, ChatResponse, ChatSource } from "../types/chat";
 import { buildChatContext } from "./chatContextService";
 import { AnalysisResult } from "../types/analysis";
 import { CareerPlanResult } from "../types/careerPlan";
+import { withGeminiRetry } from "./geminiRequest";
 
 const MAX_CONVERSATION_HISTORY = 20;
 const MAX_MESSAGE_LENGTH = 2000;
@@ -71,9 +72,15 @@ export async function handleChatMessage(params: CareerChatParams): Promise<ChatR
 
   // Call Gemini
   const genAI = new GoogleGenerativeAI(config.geminiApiKey);
-  const model = genAI.getGenerativeModel({ model: "gemini-3.8-flash" });
+  const model = genAI.getGenerativeModel({
+    model: "gemini-3.5-flash-lite",
+    generationConfig: {
+      thinkingConfig: { thinkingLevel: "LOW" },
+      maxOutputTokens: 1200,
+    } as any,
+  });
 
-  const result = await model.generateContent(fullPrompt);
+  const result = await withGeminiRetry(() => model.generateContent(fullPrompt));
   const responseText = result.response.text();
 
   // Identify which data sources were likely referenced

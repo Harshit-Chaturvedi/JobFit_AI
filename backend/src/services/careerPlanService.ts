@@ -2,6 +2,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { config } from "../config/env";
 import { CareerPlanResult } from "../types/careerPlan";
 import { AnalysisResult } from "../types/analysis";
+import { withGeminiRetry } from "./geminiRequest";
 
 const CAREER_PLAN_PROMPT = `
 You are an expert technical recruiter and career coach. Your task is to analyze a candidate's resume against a job description and their current matching analysis to produce a targeted, practical Career Improvement Plan.
@@ -158,7 +159,14 @@ export async function generateCareerPlan(
   }
 
   const genAI = new GoogleGenerativeAI(config.geminiApiKey);
-  const model = genAI.getGenerativeModel({ model: "gemini-3.8-flash" });
+  const model = genAI.getGenerativeModel({
+    model: "gemini-3.5-flash-lite",
+    generationConfig: {
+      thinkingConfig: { thinkingLevel: "LOW" },
+      responseMimeType: "application/json",
+      maxOutputTokens: 4096,
+    } as any,
+  });
 
   const fullPrompt = `${CAREER_PLAN_PROMPT}
 
@@ -174,7 +182,7 @@ CURRENT MATCHING ANALYSIS:
 ${JSON.stringify(analysis, null, 2)}
 `;
 
-  const result = await model.generateContent(fullPrompt);
+  const result = await withGeminiRetry(() => model.generateContent(fullPrompt));
   const responseText = result.response.text();
   
   const cleanedJson = cleanJsonResponse(responseText);

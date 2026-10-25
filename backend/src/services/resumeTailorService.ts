@@ -1,6 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { config } from "../config/env";
 import { ResumeTailorResult } from "../types/tailor";
+import { withGeminiRetry } from "./geminiRequest";
 
 const prompt = `You are an expert resume editor. Tailor recommendations for a candidate applying to a job.
 Use only facts found in the resume. Never invent an employer, degree, project, metric, responsibility, or skill.
@@ -40,8 +41,17 @@ export function normalizeTailorResult(value: unknown): ResumeTailorResult {
 
 export async function tailorResume(resumeText: string, jobDescription: string): Promise<ResumeTailorResult> {
   if (!config.geminiApiKey) throw new Error("Gemini API key is not configured.");
-  const model = new GoogleGenerativeAI(config.geminiApiKey).getGenerativeModel({ model: "gemini-3.8-flash" });
-  const response = await model.generateContent(`${prompt}\n\nRESUME:\n${resumeText}\n\nJOB DESCRIPTION:\n${jobDescription}`);
+  const model = new GoogleGenerativeAI(config.geminiApiKey).getGenerativeModel({
+    model: "gemini-3.5-flash-lite",
+    generationConfig: {
+      thinkingConfig: { thinkingLevel: "LOW" },
+      responseMimeType: "application/json",
+      maxOutputTokens: 2000,
+    } as any,
+  });
+  const response = await withGeminiRetry(() =>
+    model.generateContent(`${prompt}\n\nRESUME:\n${resumeText}\n\nJOB DESCRIPTION:\n${jobDescription}`)
+  );
   const cleaned = response.response.text().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
   try {
     return normalizeTailorResult(JSON.parse(cleaned));

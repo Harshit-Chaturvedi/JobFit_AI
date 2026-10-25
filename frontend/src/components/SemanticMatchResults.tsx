@@ -60,12 +60,12 @@ export default function SemanticMatchResults({ semanticResult }: SemanticMatchRe
 
         {/* Note on data rules */}
         <p className="text-[11px] text-slate-400 italic mt-3 bg-slate-800/40 p-2 rounded border border-slate-700/30">
-          ℹ️ Semantic similarity represents conceptual closeness based on embeddings. It serves as supporting evidence, while explicit resume verification remains the source of truth for claimed experience.
+          Semantic similarity represents conceptual closeness based on embeddings. It serves as supporting evidence, while explicit resume verification remains the source of truth for claimed experience.
         </p>
       </div>
 
       {/* Matched Requirements with Evidence */}
-      <div className="space-y-3">
+      <div className="semantic-requirements space-y-3">
         <h3 className="text-sm font-semibold text-slate-200 flex items-center gap-2">
           <span>Matched requirements ({matchedRequirements.length})</span>
         </h3>
@@ -73,7 +73,7 @@ export default function SemanticMatchResults({ semanticResult }: SemanticMatchRe
         {matchedRequirements.length === 0 ? (
           <p className="text-sm text-slate-400 italic">No strong semantic matches found above the similarity threshold.</p>
         ) : (
-          <div className="grid grid-cols-1 gap-3">
+          <div className="semantic-match-grid grid grid-cols-1 lg:grid-cols-2 gap-3">
             {matchedRequirements.map((match, i) => {
               const simPercent = Math.round(match.similarity * 100);
               const badgeColor =
@@ -98,7 +98,7 @@ export default function SemanticMatchResults({ semanticResult }: SemanticMatchRe
                   {/* Evidence quote */}
                   <div className="mt-2 text-xs text-slate-300 bg-slate-900/60 p-3 rounded-lg border border-slate-800">
                     <span className="text-slate-500 font-semibold block mb-1">Evidence from Resume:</span>
-                    <p className="italic text-slate-300 leading-relaxed font-mono text-[11px]">
+                    <p className="semantic-match-evidence text-slate-300 leading-relaxed">
                       &quot;{match.matchedContent.slice(0, 260)}{match.matchedContent.length > 260 ? "..." : ""}&quot;
                     </p>
                   </div>

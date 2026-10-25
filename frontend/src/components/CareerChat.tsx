@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { sendChatMessage } from "@/lib/api";
+import AssistantMarkdown from "@/components/AssistantMarkdown";
 import {
   ChatMessage,
   AnalysisResult,
@@ -103,9 +104,9 @@ export default function CareerChat({
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="w-full py-3.5 rounded-xl font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-lg shadow-emerald-500/20 hover:shadow-emerald-400/30 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-center justify-center gap-2"
+        className="analysis-result-action w-full py-3.5 rounded-xl font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white shadow-lg shadow-emerald-500/20 hover:shadow-emerald-400/30 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer flex items-center justify-center gap-2"
       >
-        <span>💬</span> Open Career Assistant
+        Open Career Assistant
       </button>
     );
   }
@@ -171,7 +172,7 @@ export default function CareerChat({
               }`}
             >
               {msg.role === "assistant" ? (
-                <div className="whitespace-pre-wrap">{msg.content}</div>
+                <AssistantMarkdown content={msg.content} />
               ) : (
                 msg.content
               )}

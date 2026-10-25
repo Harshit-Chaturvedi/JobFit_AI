@@ -3,6 +3,7 @@ import { generateCareerPlan } from "../services/careerPlanService";
 import { CareerPlanRequest } from "../types/careerPlan";
 import { AnalysisResult } from "../types/analysis";
 import { validateTextInputs } from "../middleware/apiProtection";
+import { isTransientGeminiError } from "../services/geminiRequest";
 
 export async function careerPlanController(
   req: Request,
@@ -45,6 +46,13 @@ export async function careerPlanController(
 
     const message = error instanceof Error ? error.message : "Career plan generation failed.";
 
+    const upstreamStatus = (error as { status?: number })?.status;
+    if ([429, 500, 502, 503, 504].includes(upstreamStatus || 0)) {
+      res.status(503).json({
+        error: "The career plan service is temporarily busy. Please try again in a moment.",
+      });
+      return;
+    }
     if (message.includes("API key")) {
       res.status(503).json({ error: message });
       return;

@@ -18,7 +18,7 @@ export default function ResumeTailor({ resumeText, jobDescription }: { resumeTex
 
   return <section className="rounded-xl border border-cyan-500/30 bg-cyan-500/5 p-5 space-y-4">
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-      <div><h2 className="text-lg font-semibold text-white">✨ ATS Resume Tailor</h2><p className="text-xs text-slate-400 mt-1">Get truthful, role-specific wording suggestions. Review every suggestion before using it.</p></div>
+      <div><h2 className="text-lg font-semibold text-white">ATS resume suggestions</h2><p className="text-xs text-slate-400 mt-1">Get truthful, role-specific wording suggestions. Review every suggestion before using it.</p></div>
       <button onClick={generate} disabled={loading} className="px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 text-slate-950 text-sm font-bold">{loading ? "Tailoring…" : result ? "Refresh suggestions" : "Tailor my resume"}</button>
     </div>
     {error && <p className="text-sm text-red-400">{error}</p>}
